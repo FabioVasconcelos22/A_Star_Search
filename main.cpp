@@ -22,6 +22,10 @@ std::vector<State> ParseLine(std::string const& line) {
     return row;
 }
 
+int Heuristic (int x1, int y1, int x2, int y2) {
+    return (abs(x2-x1) + abs(y2-y1));
+}
+
 std::vector<std::vector<State>> ReadBoardFile(std::string const& path) {
     std::ifstream myfile (path);
     std::vector<std::vector<State>> board{};
