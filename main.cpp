@@ -5,7 +5,7 @@
 #include <vector>
 #include <array>
 
-enum class State {kEmpty, kObstacle};
+enum class State {kEmpty, kObstacle, kClosed};
 
 std::vector<State> ParseLine(std::string const& line) {
     std::istringstream sline(line);
@@ -20,6 +20,12 @@ std::vector<State> ParseLine(std::string const& line) {
         }
     }
     return row;
+}
+
+bool Compare (std::vector<int> first, std::vector<int> second) {
+    auto f_first = first[2]+first[3];
+    auto f_second = second[2]+second[3];
+    return f_first > f_second;
 }
 
 int Heuristic (int x1, int y1, int x2, int y2) {
@@ -39,13 +45,30 @@ std::vector<std::vector<State>> ReadBoardFile(std::string const& path) {
     return board;
 }
 
+void AddToOpen (int x, int y, int g, int h,
+               std::vector<std::vector<int>> & open_nodes,
+               std::vector<std::vector<State>> & grid) {
+
+    std::vector<int> node {x,y,g,h};
+    open_nodes.push_back(node);
+
+    grid[x][y] = State::kClosed;
+}
+
 std::vector<std::vector<State>> Search(
-        std::vector<std::vector<State>> board,
+        std::vector<std::vector<State>> & board,
         std::array<int,2> start,
         std::array<int,2> goal) {
 
+    std::vector<std::vector<int>> open {};
+
+    int cost = 0;
+    int heuristic = Heuristic(start[0], start[1], goal[0], goal[1]);
+
+    AddToOpen(start[0], start[1], cost, heuristic, open, board);
+
     std::cout << "No path found!" << std::endl;
-    return {};
+    return std::vector<std::vector<State>>{};
 }
 
 std::string CellString(State cell) {
@@ -64,14 +87,20 @@ void PrintBoard(std::vector<std::vector<State>> const& board) {
     }
 }
 
+#include "test.cpp"
 
 int main() {
     std::array<int, 2> init {0,0};
     std::array<int, 2> goal {4,5};
 
-    auto board = ReadBoardFile("1.1.board");
+    auto board = ReadBoardFile("1.board");
 
     auto solution = Search(board, init, goal);
 
     PrintBoard(solution);
+
+    //Tests
+    TestHeuristic();
+    TestAddToOpen();
+    TestCompare();
 }
