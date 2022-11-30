@@ -4,8 +4,9 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <algorithm>
 
-enum class State {kEmpty, kObstacle, kClosed};
+enum class State {kEmpty, kObstacle, kClosed, kPath};
 
 std::vector<State> ParseLine(std::string const& line) {
     std::istringstream sline(line);
@@ -28,7 +29,12 @@ bool Compare (std::vector<int> first, std::vector<int> second) {
     return f_first > f_second;
 }
 
+void CellSort(std::vector<std::vector<int>> &v) {
+    sort(v.begin(), v.end(), Compare);
+}
+
 int Heuristic (int x1, int y1, int x2, int y2) {
+    // Manhattan distance formula
     return (abs(x2-x1) + abs(y2-y1));
 }
 
@@ -67,6 +73,21 @@ std::vector<std::vector<State>> Search(
 
     AddToOpen(start[0], start[1], cost, heuristic, open, board);
 
+    while (!open.empty()) {
+        CellSort(open);
+        auto current_node = open.back();
+        open.pop_back();
+        int x = current_node[0];
+        int y = current_node[1];
+
+        board[x][y] = State::kPath;
+
+        if (x == goal[0] && y == goal[1]) {
+            return board;
+        }
+
+    }
+
     std::cout << "No path found!" << std::endl;
     return std::vector<std::vector<State>>{};
 }
@@ -74,6 +95,7 @@ std::vector<std::vector<State>> Search(
 std::string CellString(State cell) {
     switch(cell) {
         case State::kObstacle: return "⛰️   ";
+        case State::kPath:  return "🚗   ";
         default: return "0   ";
     }
 }
@@ -103,4 +125,5 @@ int main() {
     TestHeuristic();
     TestAddToOpen();
     TestCompare();
+    TestSearch();
 }

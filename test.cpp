@@ -116,6 +116,35 @@ void TestCompare() {
     } else {
         cout << "passed" << "\n";
     }
-    cout << "----------------------------------------------------------" << "\n";
     return;
+}
+
+void TestSearch() {
+    cout << "----------------------------------------------------------" << "\n";
+    cout << "Search Function Test (Partial): ";
+    array<int,2> goal {4, 5};
+    auto board = ReadBoardFile("1.board");
+
+    std::cout.setstate(std::ios_base::failbit); // Disable cout
+    auto output = Search(board, goal, goal);
+    std::cout.clear(); // Enable cout
+
+    vector<vector<State>> solution{{State::kEmpty, State::kObstacle, State::kEmpty, State::kEmpty, State::kEmpty, State::kEmpty},
+                                   {State::kEmpty, State::kObstacle, State::kEmpty, State::kEmpty, State::kEmpty, State::kEmpty},
+                                   {State::kEmpty, State::kObstacle, State::kEmpty, State::kEmpty, State::kEmpty, State::kEmpty},
+                                   {State::kEmpty, State::kObstacle, State::kEmpty, State::kEmpty, State::kEmpty, State::kEmpty},
+                                   {State::kEmpty, State::kEmpty, State::kEmpty, State::kEmpty, State::kObstacle, State::kPath}};
+
+    if (output != solution) {
+        cout << "failed" << "\n";
+        cout << "Search(board, {4,5}, {4,5})" << "\n";
+        cout << "Solution board: " << "\n";
+        PrintVectorOfVectors(solution);
+        cout << "Your board: " << "\n";
+        PrintVectorOfVectors(output);
+        cout << "\n";
+    } else {
+        cout << "passed" << "\n";
+    }
+    cout << "----------------------------------------------------------" << "\n";
 }
